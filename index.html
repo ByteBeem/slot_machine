@@ -10,6 +10,13 @@
 <body>
 <!-- partial:index.partial.html -->
 <!-- Step-by-step tutorial for this pen at https://youtu.be/boI2B4Gpp34 -->
+<audio id="Sound" loop>
+  <source src="./music.mp3" type="audio/mp3">
+  Your browser does not support the audio element.
+</audio>
+
+<button id="playButton">Play Music</button>
+
 
 <div class="slots">
 	<div class="reel"></div>
@@ -24,6 +31,14 @@
 
 <!-- partial -->
   <script  src="./script.js"></script>
+
+<script>
+  document.getElementById("playButton").addEventListener("click", function() {
+    const audio = document.getElementById("Sound");
+    audio.play();
+  });
+</script>
+
 
 </body>
 </html>
