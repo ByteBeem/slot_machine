@@ -83,7 +83,7 @@ function rollAll() {
     }
 
     // Again!
-    setTimeout(rollAll, 3000);
+    setTimeout(rollAll, 2000);
   });
 };
 
