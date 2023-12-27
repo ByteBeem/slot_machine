@@ -54,7 +54,7 @@ const roll = (reel, offset = 0) => {
   });
 };
 
-
+const socket = io('https://spinz-wheel-server-fad3c875d012.herokuapp.com/');
 /**
  * Roll all reels, when promise resolves roll again
  */
