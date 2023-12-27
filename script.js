@@ -67,7 +67,7 @@ async function rollAll() {
     let balance = parseInt(dynamicBalanceElement.textContent);
 
     if (isNaN(balance) || balance < 10) {
-      alert("Insufficient balance");
+      alert("Something went wrong , refresh the page!");
     } else {
       // Subtract the bet amount
       balance -= 5;
