@@ -59,6 +59,7 @@ const handleSpin = () => {
 
   // Listen for the server's spinOutcome event
   socket.on('spinOutcome', async (spinOutcome) => {
+    console.log('Received spinOutcome from server:', spinOutcome);
     debugEl.textContent = 'rolling...';
     
 
