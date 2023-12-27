@@ -1,48 +1,46 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Spinz -Easy win- Slot Machine </title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-<link rel="stylesheet" href="./style.css">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
-
+  <link rel="stylesheet" href="./style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
 </head>
 <body>
-	<div class="bet-info">
+  <div class="bet-info">
     <div class="bet-amount">
       <h3>Bet: R5</h3>
     </div>
     <div class="balance">
-      <h3>     Balance: <span id="dynamic-balance">Loading</span></h3>
+      <h3>Balance: <span id="dynamic-balance">Loading</span></h3>
     </div>
   </div>
+
   <div id="loading-overlay" class="loading-overlay">
-    
     Loading...
   </div>
-<!-- partial:index.partial.html -->
-<!-- Step-by-step tutorial for this pen at https://youtu.be/boI2B4Gpp34 -->
-<audio id="Sound" loop>
-  <source src="./music.mp3" type="audio/mp3">
-  Your browser does not support the audio element.
-</audio>
 
-<button id="playButton">Play Music</button>
+  <!-- partial:index.partial.html -->
+  <!-- Step-by-step tutorial for this pen at https://youtu.be/boI2B4Gpp34 -->
+  <audio id="Sound" loop>
+    <source src="./music.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
 
+  <button id="playButton">Play Music</button>
 
-<div class="slots">
-	<div class="reel"></div>
-	<div class="reel"></div>
-	<div class="reel"></div>
-</div>
+  <div class="slots">
+    <div class="reel"></div>
+    <div class="reel"></div>
+    <div class="reel"></div>
+  </div>
 
-<div id="debug" class="debug"></div>
+  <div id="debug" class="debug"></div>
 
-<img style="position:fixed; left: 0; top: 0; height: 100vh; width: auto;"  src="https://assets.codepen.io/439000/slotreel.webp">
+  <img style="position:fixed; left: 0; top: 0; height: 100vh; width: auto;"  src="https://assets.codepen.io/439000/slotreel.webp">
 
-
-<!-- partial -->
+  <!-- partial -->
   <script  src="./script.js"></script>
 
 <script>
