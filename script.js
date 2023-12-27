@@ -1,107 +1,78 @@
-/**
- * Setup
- */
-const debugEl = document.getElementById('debug');
-// Mapping of indexes to icons: start from banana in the middle of the initial position and then upwards
-const iconMap = ["banana", "seven", "cherry", "plum", "orange", "bell", "bar", "lemon", "melon"];
-// Width of the icons
-const icon_width = 79;
-// Height of one icon in the strip
-const icon_height = 79;
-// Number of icons in the strip
-const num_icons = 9;
-// Max-speed in ms for animating one icon down
-const time_per_icon = 80;
-// Holds icon indexes
-const indexes = [0, 0, 0];
+const slotSymbols = [
+      ['😀', '😁', '😂', '😃', '😄', '😅', '😆', '😇', '😈', '😉', '😊', '🙂'],
+      ['🍎', '🍏', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑'],
+      ['⭐️', '🌟', '✨', '💫', '⚡️', '☄️', '🌠', '🌌', '🌙', '🌕', '🌖', '🌗']
+    ];
 
-/** 
- * Roll one reel
- */
-const roll = (reel, offset = 0) => {
-  // Minimum of 2 + the reel offset rounds
-  const delta = (offset + 2) * num_icons + Math.round(Math.random() * num_icons);
+    function createSymbolElement(symbol) {
+      const div = document.createElement('div');
+      div.classList.add('symbol');
+      div.textContent = symbol;
+      return div;
+    }
 
-  // Return promise so we can wait for all reels to finish
-  return new Promise((resolve, reject) => {
-    const style = getComputedStyle(reel);
-    // Current background position
-    const backgroundPositionY = parseFloat(style["background-position-y"]);
-    // Target background position
-    const targetBackgroundPositionY = backgroundPositionY + delta * icon_height;
-    // Normalized background position, for reset
-    const normTargetBackgroundPositionY = targetBackgroundPositionY % (num_icons * icon_height);
+    let spun = false;
+    function spin() {
+      if (spun) {
+        reset();
+      }
+      const slots = document.querySelectorAll('.slot');
+      let completedSlots = 0;
 
-    // Delay animation with timeout, for some reason a delay in the animation property causes stutter
-    setTimeout(() => {
-      // Set transition properties ==> https://cubic-bezier.com/#.41,-0.01,.63,1.09
-      reel.style.transition = `background-position-y ${(8 + 1 * delta) * time_per_icon}ms cubic-bezier(.41,-0.01,.63,1.09)`;
-      // Set background position
-      reel.style.backgroundPositionY = `${backgroundPositionY + delta * icon_height}px`;
-    }, offset * 150);
+      slots.forEach((slot, index) => {
+        const symbols = slot.querySelector('.symbols');
+        const symbolHeight = symbols.querySelector('.symbol')?.clientHeight;
+        const symbolCount = symbols.childElementCount;
 
-    // After animation
-    setTimeout(() => {
-      // Reset position, so that it doesn't get higher without limit
-      reel.style.transition = `none`;
-      reel.style.backgroundPositionY = `${normTargetBackgroundPositionY}px`;
-      // Resolve this promise
-      resolve(delta % num_icons);
-    }, (8 + 1 * delta) * time_per_icon + offset * 150);
-  });
-};
+        symbols.innerHTML = '';
 
-const socket = io('https://spinz-wheel-server-fad3c875d012.herokuapp.com/');
+        symbols.appendChild(createSymbolElement('❓'));
 
-// Function to handle the spin logic
-const handleSpin = () => {
-  socket.emit('SpinEasywin');
-
-  // Listen for the server's spinOutcome event
-  socket.on('spinOutcome', async (spinOutcome) => {
-    console.log('Received spinOutcome from server:', spinOutcome);
-    debugEl.textContent = 'rolling...';
-    
-
-    const reelsList = document.querySelectorAll('.slots > .reel');
-
-    try {
-      // Ensure the balance is loaded from the HTML
-      const dynamicBalanceElement = document.getElementById('dynamic-balance');
-      let balance = parseInt(dynamicBalanceElement.textContent);
-
-      if (isNaN(balance) || balance < 10) {
-        alert("Something went wrong, refresh the page!");
-      } else {
-        // Subtract the bet amount
-        balance -= 5;
-        dynamicBalanceElement.textContent = balance;
-
-        // Process spinOutcome received from the server
-        const deltas = await Promise.all([...reelsList].map((reel, i) => roll(reel, i)));
-
-        // Add up indexes
-        deltas.forEach((delta, i) => indexes[i] = (indexes[i] + delta) % num_icons);
-        debugEl.textContent = indexes.map(i => iconMap[i]).join(' - ');
-
-        // Win conditions
-        if (indexes[0] == indexes[1] || indexes[1] == indexes[2]) {
-          const winCls = indexes[0] == indexes[2] ? "win2" : "win1";
-          document.querySelector(".slots").classList.add(winCls);
-          //setTimeout(() => document.querySelector(".slots").classList.remove(winCls), 2000);
+        for (let i = 0; i < 3; i++) {
+          slotSymbols[index].forEach(symbol => {
+            symbols.appendChild(createSymbolElement(symbol));
+          });
         }
 
-      }
-    } catch (error) {
-      console.error('Error rolling reels:', error);
+        const totalDistance = symbolCount * symbolHeight;
+        const randomOffset = -Math.floor(Math.random() * (symbolCount - 1) + 1) * symbolHeight;
+        symbols.style.top = `${randomOffset}px`;
+
+        symbols.addEventListener('transitionend', () => {
+          completedSlots++;
+          if (completedSlots === slots.length) {
+            logDisplayedSymbols();
+          }
+        }, { once: true });
+      });
+
+      spun = true;
     }
-  });
-};
 
+    function reset() {
+      const slots = document.querySelectorAll('.slot');
 
-// Event listener for the "Spin" button
-const playButton = document.getElementById('playButton');
-playButton.addEventListener('click', handleSpin);
+      slots.forEach(slot => {
+        const symbols = slot.querySelector('.symbols');
+        symbols.style.transition = 'none';
+        symbols.style.top = '0';
+        symbols.offsetHeight;
+        symbols.style.transition = '';
+      });
+    }
 
+    function logDisplayedSymbols() {
+      const slots = document.querySelectorAll('.slot');
+      const displayedSymbols = [];
 
+      slots.forEach((slot, index) => {
+        const symbols = slot.querySelector('.symbols');
+        const symbolIndex = Math.floor(Math.abs(parseInt(symbols.style.top, 10)) / slot.clientHeight) % slotSymbols[index].length;
+        const displayedSymbol = slotSymbols[index][symbolIndex];
+        displayedSymbols.push(displayedSymbol);
+      });
 
+      console.log(displayedSymbols);
+    }
+
+    spin();
