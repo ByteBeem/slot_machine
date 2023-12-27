@@ -62,12 +62,15 @@ async function rollAll() {
   const reelsList = document.querySelectorAll('.slots > .reel');
 
   try {
-    const storedToken = localStorage.getItem('yourTokenKey');
-    if (balance < 10) {
+    // Ensure the balance is loaded from the HTML
+    const dynamicBalanceElement = document.getElementById('dynamic-balance');
+    let balance = parseInt(dynamicBalanceElement.textContent);
+
+    if (isNaN(balance) || balance < 10) {
       alert("Insufficient balance");
     } else {
+      // Subtract the bet amount
       balance -= 5;
-      const dynamicBalanceElement = document.getElementById('dynamic-balance');
       dynamicBalanceElement.textContent = balance;
 
       const deltas = await Promise.all([...reelsList].map((reel, i) => roll(reel, i)));
