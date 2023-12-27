@@ -53,10 +53,8 @@ const roll = (reel, offset = 0) => {
 
 const socket = io('https://spinz-wheel-server-fad3c875d012.herokuapp.com/');
 
-/**
- * Roll all reels, when the promise resolves roll again
- */
-async function rollAll() {
+// Listen for the server's outcome event
+socket.on('spinOutcome', async (outcome) => {
   debugEl.textContent = 'rolling...';
 
   const reelsList = document.querySelectorAll('.slots > .reel');
@@ -67,7 +65,7 @@ async function rollAll() {
     let balance = parseInt(dynamicBalanceElement.textContent);
 
     if (isNaN(balance) || balance < 10) {
-      alert("Something went wrong , refresh the page!");
+      alert("Something went wrong, refresh the page!");
     } else {
       // Subtract the bet amount
       balance -= 5;
@@ -92,7 +90,7 @@ async function rollAll() {
   } catch (error) {
     console.error('Error rolling reels:', error);
   }
-}
+});
 
 // Kickoff
 setTimeout(rollAll, 1000);
