@@ -175,6 +175,8 @@ body {
 .balance {
   color: #0066cc; 
   margin-left: 20px;
+  align-items: top;
+  padding-bottom:50px;
 }
 
 #dynamic-balance {
