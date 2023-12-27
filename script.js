@@ -55,7 +55,7 @@ const socket = io('https://spinz-wheel-server-fad3c875d012.herokuapp.com/');
 
 // Function to handle the spin logic
 const handleSpin = () => {
-  socket.emit('Spin');
+  socket.emit('SpinEasywin');
 
   // Listen for the server's spinOutcome event
   socket.on('spinOutcome', async (spinOutcome) => {
