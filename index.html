@@ -20,6 +20,13 @@
   <div id="loading-overlay" class="loading-overlay">
     Loading...
   </div>
+	<div id="winModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p id="winAmount"></p>
+    <button id="claimButton">Claim</button>
+  </div>
+</div>
 
   <!-- partial:index.partial.html -->
   <!-- Step-by-step tutorial for this pen at https://youtu.be/boI2B4Gpp34 -->
@@ -136,6 +143,40 @@
       
       hideLoadingOverlay();
     }
+
+	socket.on('win', (winData) => {
+  const winModal = document.getElementById('winModal');
+  const winAmountElement = document.getElementById('winAmount');
+  const claimButton = document.getElementById('claimButton');
+
+  // Display win amount in the modal
+  winAmountElement.textContent = `Congratulations! You won R${winData.amount}`;
+const dynamicBalanceElement = document.getElementById('dynamic-balance');
+    let balance = parseInt(dynamicBalanceElement.textContent);
+	balance += 10;
+      dynamicBalanceElement.textContent = balance;	
+		
+
+  // Show the modal
+  winModal.style.display = 'block';
+
+  // Close the modal when the user clicks the close button
+  const closeModal = () => {
+    winModal.style.display = 'none';
+  };
+
+  // Close the modal when the user clicks outside the modal
+  window.onclick = (event) => {
+    if (event.target === winModal) {
+      closeModal();
+    }
+  };
+
+  // Close the modal when the user clicks the Claim button
+  claimButton.onclick = () => {
+    closeModal();
+  };
+});
 
 	
 </script>
