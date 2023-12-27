@@ -1,20 +1,19 @@
 /**
  * Setup
  */
-const debugEl = document.getElementById('debug'),
-// Mapping of indexes to icons: start from banana in middle of initial position and then upwards
-iconMap = ["banana", "seven", "cherry", "plum", "orange", "bell", "bar", "lemon", "melon"],
+const debugEl = document.getElementById('debug');
+// Mapping of indexes to icons: start from banana in the middle of the initial position and then upwards
+const iconMap = ["banana", "seven", "cherry", "plum", "orange", "bell", "bar", "lemon", "melon"];
 // Width of the icons
-icon_width = 79,
+const icon_width = 79;
 // Height of one icon in the strip
-icon_height = 79,
+const icon_height = 79;
 // Number of icons in the strip
-num_icons = 9,
+const num_icons = 9;
 // Max-speed in ms for animating one icon down
-time_per_icon = 80,
+const time_per_icon = 80;
 // Holds icon indexes
-indexes = [0, 0, 0];
-
+const indexes = [0, 0, 0];
 
 /** 
  * Roll one reel
@@ -23,16 +22,15 @@ const roll = (reel, offset = 0) => {
   // Minimum of 2 + the reel offset rounds
   const delta = (offset + 2) * num_icons + Math.round(Math.random() * num_icons);
 
-  // Return promise so we can wait for all reels to finish
+  // Return a promise so we can wait for all reels to finish
   return new Promise((resolve, reject) => {
-
-    const style = getComputedStyle(reel),
+    const style = getComputedStyle(reel);
     // Current background position
-    backgroundPositionY = parseFloat(style["background-position-y"]),
+    const backgroundPositionY = parseFloat(style["background-position-y"]);
     // Target background position
-    targetBackgroundPositionY = backgroundPositionY + delta * icon_height,
+    const targetBackgroundPositionY = backgroundPositionY + delta * icon_height;
     // Normalized background position, for reset
-    normTargetBackgroundPositionY = targetBackgroundPositionY % (num_icons * icon_height);
+    const normTargetBackgroundPositionY = targetBackgroundPositionY % (num_icons * icon_height);
 
     // Delay animation with timeout, for some reason a delay in the animation property causes stutter
     setTimeout(() => {
@@ -44,48 +42,56 @@ const roll = (reel, offset = 0) => {
 
     // After animation
     setTimeout(() => {
-      // Reset position, so that it doesn't get higher without limit
+      // Reset position so that it doesn't get higher without limit
       reel.style.transition = `none`;
       reel.style.backgroundPositionY = `${normTargetBackgroundPositionY}px`;
       // Resolve this promise
       resolve(delta % num_icons);
     }, (8 + 1 * delta) * time_per_icon + offset * 150);
-
   });
 };
 
 const socket = io('https://spinz-wheel-server-fad3c875d012.herokuapp.com/');
+
 /**
- * Roll all reels, when promise resolves roll again
+ * Roll all reels, when the promise resolves, roll again
  */
 function rollAll() {
+  const storedToken = localStorage.getItem('yourTokenKey');
+  
+  if (balance < 10) {
+    alert("Insufficient balance");
+  } else {
+    balance -= 5;
+    const dynamicBalanceElement = document.getElementById('dynamic-balance');
+    dynamicBalanceElement.textContent = balance;
 
-  debugEl.textContent = 'rolling...';
+    debugEl.textContent = 'rolling...';
 
-  const reelsList = document.querySelectorAll('.slots > .reel');
+    const reelsList = document.querySelectorAll('.slots > .reel');
 
-  Promise
+    Promise
+      // Activate each reel, must convert NodeList to Array for this with the spread operator
+      .all([...reelsList].map((reel, i) => roll(reel, i)))
 
-  // Activate each reel, must convert NodeList to Array for this with spread operator
-  .all([...reelsList].map((reel, i) => roll(reel, i)))
+      // When all reels are done animating (all promises resolve)
+      .then(deltas => {
+        // Add up indexes
+        deltas.forEach((delta, i) => indexes[i] = (indexes[i] + delta) % num_icons);
+        debugEl.textContent = indexes.map(i => iconMap[i]).join(' - ');
 
-  // When all reels done animating (all promises solve)
-  .then(deltas => {
-    // add up indexes
-    deltas.forEach((delta, i) => indexes[i] = (indexes[i] + delta) % num_icons);
-    debugEl.textContent = indexes.map(i => iconMap[i]).join(' - ');
+        // Win conditions
+        if (indexes[0] == indexes[1] || indexes[1] == indexes[2]) {
+          const winCls = indexes[0] == indexes[2] ? "win2" : "win1";
+          document.querySelector(".slots").classList.add(winCls);
+          setTimeout(() => document.querySelector(".slots").classList.remove(winCls), 2000);
+        }
 
-    // Win conditions
-    if (indexes[0] == indexes[1] || indexes[1] == indexes[2]) {
-      const winCls = indexes[0] == indexes[2] ? "win2" : "win1";
-      document.querySelector(".slots").classList.add(winCls);
-      setTimeout(() => document.querySelector(".slots").classList.remove(winCls), 2000);
-    }
-
-    // Again!
-    setTimeout(rollAll, 2000);
-  });
-};
+        // Again!
+        setTimeout(rollAll, 2000);
+      });
+  }
+}
 
 // Kickoff
 setTimeout(rollAll, 1000);
