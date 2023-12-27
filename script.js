@@ -55,6 +55,7 @@ const socket = io('https://spinz-wheel-server-fad3c875d012.herokuapp.com/');
 
 // Function to handle the spin logic
 const handleSpin = async () => {
+  console.log("pressed spin");
   debugEl.textContent = 'rolling...';
 
   const reelsList = document.querySelectorAll('.slots > .reel');
@@ -84,8 +85,7 @@ const handleSpin = async () => {
         setTimeout(() => document.querySelector(".slots").classList.remove(winCls), 2000);
       }
 
-      // Again!
-      setTimeout(rollAll, 2000);
+      
     }
   } catch (error) {
     console.error('Error rolling reels:', error);
@@ -96,11 +96,5 @@ const handleSpin = async () => {
 const playButton = document.getElementById('playButton');
 playButton.addEventListener('click', handleSpin);
 
-// Function to trigger the initial spin
-const rollAll = () => {
-  // Emit a "spin" event to the server when the reels are spun
-  socket.emit('spin');
-};
 
-// Kickoff
-setTimeout(rollAll, 1000);
+
