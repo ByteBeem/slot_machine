@@ -154,13 +154,17 @@ body {
   font-weight: 700;
 }
 .bet-info {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 10px;
   background-color: #f0f0f0;
   border: 1px solid #ccc;
-  margin-bottom: 20px;
+  z-index: 1000; /* Ensure it's on top of other elements */
 }
 
 .bet-amount h3,
@@ -175,10 +179,19 @@ body {
 .balance {
   color: #0066cc; 
   margin-left: 20px;
-  align-items: top;
-  padding-bottom:50px;
 }
 
 #dynamic-balance {
   font-weight: bold;
 }
+
+
+body {
+  margin-top: 60px; 
+}
+
+
+body {
+  padding-top: 20px;
+}
+
