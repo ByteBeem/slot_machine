@@ -54,43 +54,48 @@ const roll = (reel, offset = 0) => {
 const socket = io('https://spinz-wheel-server-fad3c875d012.herokuapp.com/');
 
 // Function to handle the spin logic
-const handleSpin = async () => {
-  console.log("pressed spin");
-  debugEl.textContent = 'rolling...';
+const handleSpin = () => {
+  socket.emit('Spin');
 
-  const reelsList = document.querySelectorAll('.slots > .reel');
+  // Listen for the server's spinOutcome event
+  socket.on('spinOutcome', async (spinOutcome) => {
+    debugEl.textContent = 'rolling...';
 
-  try {
-    // Ensure the balance is loaded from the HTML
-    const dynamicBalanceElement = document.getElementById('dynamic-balance');
-    let balance = parseInt(dynamicBalanceElement.textContent);
+    const reelsList = document.querySelectorAll('.slots > .reel');
 
-    if (isNaN(balance) || balance < 10) {
-      alert("Something went wrong, refresh the page!");
-    } else {
-      // Subtract the bet amount
-      balance -= 5;
-      dynamicBalanceElement.textContent = balance;
+    try {
+      // Ensure the balance is loaded from the HTML
+      const dynamicBalanceElement = document.getElementById('dynamic-balance');
+      let balance = parseInt(dynamicBalanceElement.textContent);
 
-      const deltas = await Promise.all([...reelsList].map((reel, i) => roll(reel, i)));
+      if (isNaN(balance) || balance < 10) {
+        alert("Something went wrong, refresh the page!");
+      } else {
+        // Subtract the bet amount
+        balance -= 5;
+        dynamicBalanceElement.textContent = balance;
 
-      // Add up indexes
-      deltas.forEach((delta, i) => indexes[i] = (indexes[i] + delta) % num_icons);
-      debugEl.textContent = indexes.map(i => iconMap[i]).join(' - ');
+        // Process spinOutcome received from the server
+        const deltas = await Promise.all([...reelsList].map((reel, i) => roll(reel, i)));
 
-      // Win conditions
-      if (indexes[0] == indexes[1] || indexes[1] == indexes[2]) {
-        const winCls = indexes[0] == indexes[2] ? "win2" : "win1";
-        document.querySelector(".slots").classList.add(winCls);
-        setTimeout(() => document.querySelector(".slots").classList.remove(winCls), 2000);
+        // Add up indexes
+        deltas.forEach((delta, i) => indexes[i] = (indexes[i] + delta) % num_icons);
+        debugEl.textContent = indexes.map(i => iconMap[i]).join(' - ');
+
+        // Win conditions
+        if (indexes[0] == indexes[1] || indexes[1] == indexes[2]) {
+          const winCls = indexes[0] == indexes[2] ? "win2" : "win1";
+          document.querySelector(".slots").classList.add(winCls);
+          //setTimeout(() => document.querySelector(".slots").classList.remove(winCls), 2000);
+        }
+
       }
-
-      
+    } catch (error) {
+      console.error('Error rolling reels:', error);
     }
-  } catch (error) {
-    console.error('Error rolling reels:', error);
-  }
+  });
 };
+
 
 // Event listener for the "Spin" button
 const playButton = document.getElementById('playButton');
