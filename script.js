@@ -60,6 +60,7 @@ const handleSpin = () => {
   // Listen for the server's spinOutcome event
   socket.on('spinOutcome', async (spinOutcome) => {
     debugEl.textContent = 'rolling...';
+    
 
     const reelsList = document.querySelectorAll('.slots > .reel');
 
