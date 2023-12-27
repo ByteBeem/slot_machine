@@ -22,7 +22,7 @@ const roll = (reel, offset = 0) => {
   // Minimum of 2 + the reel offset rounds
   const delta = (offset + 2) * num_icons + Math.round(Math.random() * num_icons);
 
-  // Return a promise so we can wait for all reels to finish
+  // Return promise so we can wait for all reels to finish
   return new Promise((resolve, reject) => {
     const style = getComputedStyle(reel);
     // Current background position
@@ -42,7 +42,7 @@ const roll = (reel, offset = 0) => {
 
     // After animation
     setTimeout(() => {
-      // Reset position so that it doesn't get higher without limit
+      // Reset position, so that it doesn't get higher without limit
       reel.style.transition = `none`;
       reel.style.backgroundPositionY = `${normTargetBackgroundPositionY}px`;
       // Resolve this promise
@@ -54,42 +54,40 @@ const roll = (reel, offset = 0) => {
 const socket = io('https://spinz-wheel-server-fad3c875d012.herokuapp.com/');
 
 /**
- * Roll all reels, when the promise resolves, roll again
+ * Roll all reels, when the promise resolves roll again
  */
-function rollAll() {
-  const storedToken = localStorage.getItem('yourTokenKey');
-  
-  if (balance < 10) {
-    alert("Insufficient balance");
-  } else {
-    balance -= 5;
-    const dynamicBalanceElement = document.getElementById('dynamic-balance');
-    dynamicBalanceElement.textContent = balance;
+async function rollAll() {
+  debugEl.textContent = 'rolling...';
 
-    debugEl.textContent = 'rolling...';
+  const reelsList = document.querySelectorAll('.slots > .reel');
 
-    const reelsList = document.querySelectorAll('.slots > .reel');
+  try {
+    const storedToken = localStorage.getItem('yourTokenKey');
+    if (balance < 10) {
+      alert("Insufficient balance");
+    } else {
+      balance -= 5;
+      const dynamicBalanceElement = document.getElementById('dynamic-balance');
+      dynamicBalanceElement.textContent = balance;
 
-    Promise
-      // Activate each reel, must convert NodeList to Array for this with the spread operator
-      .all([...reelsList].map((reel, i) => roll(reel, i)))
+      const deltas = await Promise.all([...reelsList].map((reel, i) => roll(reel, i)));
 
-      // When all reels are done animating (all promises resolve)
-      .then(deltas => {
-        // Add up indexes
-        deltas.forEach((delta, i) => indexes[i] = (indexes[i] + delta) % num_icons);
-        debugEl.textContent = indexes.map(i => iconMap[i]).join(' - ');
+      // Add up indexes
+      deltas.forEach((delta, i) => indexes[i] = (indexes[i] + delta) % num_icons);
+      debugEl.textContent = indexes.map(i => iconMap[i]).join(' - ');
 
-        // Win conditions
-        if (indexes[0] == indexes[1] || indexes[1] == indexes[2]) {
-          const winCls = indexes[0] == indexes[2] ? "win2" : "win1";
-          document.querySelector(".slots").classList.add(winCls);
-          setTimeout(() => document.querySelector(".slots").classList.remove(winCls), 2000);
-        }
+      // Win conditions
+      if (indexes[0] == indexes[1] || indexes[1] == indexes[2]) {
+        const winCls = indexes[0] == indexes[2] ? "win2" : "win1";
+        document.querySelector(".slots").classList.add(winCls);
+        setTimeout(() => document.querySelector(".slots").classList.remove(winCls), 2000);
+      }
 
-        // Again!
-        setTimeout(rollAll, 2000);
-      });
+      // Again!
+      setTimeout(rollAll, 2000);
+    }
+  } catch (error) {
+    console.error('Error rolling reels:', error);
   }
 }
 
