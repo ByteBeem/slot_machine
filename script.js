@@ -1,93 +1,15 @@
-function spin() {
-  if (spun) {
-    reset();
-  }
-
-  const storedToken = localStorage.getItem('yourTokenKey');
-  if (balance < 1) {
-    alert("Insufficient balance");
-    return;
-  }
-
-  balance -= 1;
-  const dynamicBalanceElement = document.getElementById('dynamic-balance');
-  dynamicBalanceElement.textContent = balance;
-
-  socket.emit("fruitSpin", storedToken);
-  playSlotSound(); 
-
-  const slots = document.querySelectorAll('.slot');
-  let completedSlots = 0;
-
-  // Function to shuffle symbols rapidly
-  function shuffleSymbols() {
-    slots.forEach((slot, index) => {
-      const symbols = slot.querySelector('.symbols');
-      const symbolHeight = symbols.querySelector('.symbol')?.clientHeight;
-      const symbolCount = symbols.childElementCount;
-
-      const totalDistance = symbolCount * symbolHeight;
-      const randomOffset = -Math.floor(Math.random() * (symbolCount - 1) + 1) * symbolHeight;
-
-      symbols.innerHTML = '';
-      symbols.appendChild(createSymbolElement('❓'));
-
-      slotSymbols[index].forEach(symbol => {
-        symbols.appendChild(createSymbolElement(symbol));
-      });
-
-      symbols.style.top = `${randomOffset}px`;
-    });
-
-    // Use requestAnimationFrame for smooth and efficient animation
-    requestAnimationFrame(shuffleSymbols);
-  }
-
-  // Start shuffling symbols
-  shuffleSymbols();
-
-  // Move socket.on("Symbols", ...) outside the loop
-  socket.on("Symbols", (receivedSymbols) => {
-    // Stop the shuffle animation
-    cancelAnimationFrame(shuffleSymbols);
-
-    // Display the final symbols received from the server
-    slots.forEach((slot, index) => {
-      const symbols = slot.querySelector('.symbols');
-      const symbolHeight = symbols.querySelector('.symbol')?.clientHeight;
-      const symbolCount = symbols.childElementCount;
-
-      const totalDistance = symbolCount * symbolHeight;
-      const randomOffset = -Math.floor(Math.random() * (symbolCount - 1) + 1) * symbolHeight;
-
-      symbols.innerHTML = '';
-      symbols.appendChild(createSymbolElement('❓'));
-
-      receivedSymbols.forEach(symbol => {
-        symbols.appendChild(createSymbolElement(symbol));
-      });
-
-      symbols.style.top = `${randomOffset}px`;
-
-      symbols.addEventListener('transitionend', () => {
-        completedSlots++;
-        if (completedSlots === slots.length) {
-          logDisplayedSymbols();
-        }
-      }, { once: true });
-    });
-  });
-
-  spun = true;
-}
 const slotSymbols = [
   ['😀', '😁', '😂', '😃', '😄', '😅', '😆', '😇', '😈', '😉', '😊', '🙂'],
   ['🍎', '🍏', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑'],
   ['⭐️', '🌟', '✨', '💫', '⚡️', '☄️', '🌠', '🌌', '🌙', '🌕', '🌖', '🌗']
 ];
 
-const audio = new Audio('./slot-machine-payout-81725.mp3'); 
+const audio = new Audio('./slot-machine-payout-81725.mp3');
 const socket = io('https://spinz-wheel-server-fad3c875d012.herokuapp.com/');
+let spun = false;
+
+// Assuming balance is defined somewhere in your code
+let balance = 10; // Replace with the actual balance value
 
 function createSymbolElement(symbol) {
   const div = document.createElement('div');
@@ -95,8 +17,6 @@ function createSymbolElement(symbol) {
   div.textContent = symbol;
   return div;
 }
-
-let spun = false;
 
 function playSlotSound() {
   audio.currentTime = 0;
@@ -108,86 +28,51 @@ function spin() {
     reset();
   }
 
+  // Assuming balance is defined somewhere in your code
   const storedToken = localStorage.getItem('yourTokenKey');
   if (balance < 1) {
-    alert("Insufficient balance");
-    return;
+    alert('Insufficient balance');
+    return; // Added return to stop further execution
   }
 
   balance -= 1;
   const dynamicBalanceElement = document.getElementById('dynamic-balance');
   dynamicBalanceElement.textContent = balance;
 
-  socket.emit("fruitSpin", storedToken);
-  playSlotSound(); 
+  playSlotSound();
 
   const slots = document.querySelectorAll('.slot');
   let completedSlots = 0;
 
-  // Function to shuffle symbols rapidly
-  function shuffleSymbols() {
-    slots.forEach((slot, index) => {
-      const symbols = slot.querySelector('.symbols');
-      const symbolHeight = symbols.querySelector('.symbol')?.clientHeight;
-      const symbolCount = symbols.childElementCount;
+  slots.forEach((slot, index) => {
+    const symbols = slot.querySelector('.symbols');
+    const symbolHeight = symbols.querySelector('.symbol')?.clientHeight || 0; // Added fallback value
+    const symbolCount = symbols.childElementCount;
 
-      const totalDistance = symbolCount * symbolHeight;
-      const randomOffset = -Math.floor(Math.random() * (symbolCount - 1) + 1) * symbolHeight;
+    symbols.innerHTML = '';
 
-      symbols.innerHTML = '';
-      symbols.appendChild(createSymbolElement('❓'));
+    symbols.appendChild(createSymbolElement('❓'));
 
+    for (let i = 0; i < 3; i++) {
       slotSymbols[index].forEach(symbol => {
         symbols.appendChild(createSymbolElement(symbol));
       });
+    }
 
-      symbols.style.top = `${randomOffset}px`;
-    });
+    const totalDistance = symbolCount * symbolHeight;
+    const randomOffset = -Math.floor(Math.random() * (symbolCount - 1) + 1) * symbolHeight;
+    symbols.style.top = `${randomOffset}px`;
 
-    // Use requestAnimationFrame for smooth and efficient animation
-    requestAnimationFrame(shuffleSymbols);
-  }
-
-  // Start shuffling symbols
-  shuffleSymbols();
-
-  // Move socket.on("Symbols", ...) outside the loop
-  socket.on("Symbols", (receivedSymbols) => {
-    console.log('got', receivedSymbols);
-    // Stop the shuffle animation
-    cancelAnimationFrame(shuffleSymbols);
-
-    // Display the final symbols received from the server
-    slots.forEach((slot, index) => {
-      const symbols = slot.querySelector('.symbols');
-      const symbolHeight = symbols.querySelector('.symbol')?.clientHeight;
-      const symbolCount = symbols.childElementCount;
-
-      const totalDistance = symbolCount * symbolHeight;
-      const randomOffset = -Math.floor(Math.random() * (symbolCount - 1) + 1) * symbolHeight;
-
-      symbols.innerHTML = '';
-      symbols.appendChild(createSymbolElement('❓'));
-
-      receivedSymbols.forEach(symbol => {
-        symbols.appendChild(createSymbolElement(symbol));
-      });
-
-      symbols.style.top = `${randomOffset}px`;
-
-      symbols.addEventListener('transitionend', () => {
-        completedSlots++;
-        if (completedSlots === slots.length) {
-          logDisplayedSymbols();
-        }
-      }, { once: true });
-    });
+    symbols.addEventListener('transitionend', () => {
+      completedSlots++;
+      if (completedSlots === slots.length) {
+        logDisplayedSymbols();
+      }
+    }, { once: true });
   });
 
   spun = true;
 }
-
-
 
 function reset() {
   const slots = document.querySelectorAll('.slot');
@@ -199,6 +84,8 @@ function reset() {
     symbols.offsetHeight;
     symbols.style.transition = '';
   });
+
+  spun = false; // Reset the spun flag
 }
 
 function logDisplayedSymbols() {
@@ -215,4 +102,5 @@ function logDisplayedSymbols() {
   console.log(displayedSymbols);
 }
 
-spin();
+// Assuming you want to call spin on some user action or event
+// spin();
