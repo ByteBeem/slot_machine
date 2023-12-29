@@ -17,12 +17,12 @@ body {
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
-    perspective: 1000px; /* Adjust the perspective value as needed */
+    perspective: 1000px; 
 }
 
 .slot {
-    width: 100px;
-    height: 150px;
+    width: 200px;
+    height: 300px;
     border: 1px solid black;
     border-radius: 7.5px;
     display: inline-block;
@@ -31,7 +31,7 @@ body {
     background: #fafafa;
     box-shadow: 0 0 3px 2px rgba(0, 0, 0, 0.4) inset;
     transform-style: preserve-3d;
-    transform: translateZ(-50px); /* Adjust the translateZ value as needed */
+    transform: translateZ(-50px);
 }
 
 .slot .symbols {
@@ -42,8 +42,8 @@ body {
 }
 
 .slot .symbol {
-    width: 100px;
-    height: 150px;
+    width: 200px;
+    height: 300px;
     font-size: 60px;
     line-height: 100px;
     display: block;
