@@ -74,9 +74,10 @@ function spin() {
   symbols.addEventListener('transitionend', () => {
     completedSlots++;
     if (completedSlots === slots.length) {
-      logDisplayedSymbols();
+        logDisplayedSymbols();
     }
-  }, { once: true });
+}, { once: true });
+
 });
 
   spun = true;
