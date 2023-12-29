@@ -33,13 +33,7 @@ function spin() {
   balance -= 1;
     const dynamicBalanceElement = document.getElementById('dynamic-balance');
     dynamicBalanceElement.textContent = balance;
-  if (!storedToken) {
-    console.error('Token not found in local storage');
-    alert("No token found go and login again!")
-    return;
-    
-  }
-  const storedToken = localStorage.getItem('yourTokenKey');
+  
   socket.emit("fruitSpin", storedToken);
   playSlotSound(); 
 
