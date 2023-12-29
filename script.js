@@ -24,6 +24,7 @@ function spin() {
   if (spun) {
     reset();
   }
+  playSlotSound(); 
 
   const slots = document.querySelectorAll('.slot');
   let completedSlots = 0;
@@ -51,7 +52,7 @@ function spin() {
       completedSlots++;
       if (completedSlots === slots.length) {
         logDisplayedSymbols();
-        playSlotSound(); 
+        
       }
     }, { once: true });
   });
