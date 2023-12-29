@@ -39,6 +39,7 @@ function spin() {
     return;
     
   }
+  const storedToken = localStorage.getItem('yourTokenKey');
   socket.emit("fruitSpin", storedToken);
   playSlotSound(); 
 
