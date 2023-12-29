@@ -33,6 +33,13 @@ function spin() {
   balance -= 1;
     const dynamicBalanceElement = document.getElementById('dynamic-balance');
     dynamicBalanceElement.textContent = balance;
+  if (!storedToken) {
+    console.error('Token not found in local storage');
+    alert("No token found go and login again!")
+    return;
+    
+  }
+  socket.emit("fruitSpin", storedToken);
   playSlotSound(); 
 
   const slots = document.querySelectorAll('.slot');
@@ -52,19 +59,30 @@ function spin() {
         symbols.appendChild(createSymbolElement(symbol));
       });
     }
+  socket.on("Symbols", (receivedSymbols) => {
+  const symbols = slot.querySelector('.symbols');
+  const symbolHeight = symbols.querySelector('.symbol')?.clientHeight;
+  const symbolCount = symbols.childElementCount;
 
-    const totalDistance = symbolCount * symbolHeight;
-    const randomOffset = -Math.floor(Math.random() * (symbolCount - 1) + 1) * symbolHeight;
-    symbols.style.top = `${randomOffset}px`;
+  const totalDistance = symbolCount * symbolHeight;
+  const randomOffset = -Math.floor(Math.random() * (symbolCount - 1) + 1) * symbolHeight;
 
-    symbols.addEventListener('transitionend', () => {
-      completedSlots++;
-      if (completedSlots === slots.length) {
-        logDisplayedSymbols();
-        
-      }
-    }, { once: true });
+  // Use the symbols received from the server instead of the local symbols
+  symbols.innerHTML = '';
+  symbols.appendChild(createSymbolElement('❓'));
+  receivedSymbols.forEach(symbol => {
+    symbols.appendChild(createSymbolElement(symbol));
   });
+
+  symbols.style.top = `${randomOffset}px`;
+
+  symbols.addEventListener('transitionend', () => {
+    completedSlots++;
+    if (completedSlots === slots.length) {
+      logDisplayedSymbols();
+    }
+  }, { once: true });
+});
 
   spun = true;
 }
