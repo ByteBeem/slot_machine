@@ -1,48 +1,35 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>CodePen - jcjms - Slots</title>
-  <link rel="stylesheet" href="./style.css">
-
-</head>
-<body>
-<!-- partial:index.partial.html -->
-<!DOCTYPE html>
-<!-- https://github.com/jcjms/slots -->
-<html>
+<html lang="en">
 
 <head>
-  <title>Slot Machine</title>
-  <link rel="stylesheet" href="css/styles.css"/>
+    <meta charset="UTF-8">
+    <title>CodePen - jcjms - Slots</title>
+    <link rel="stylesheet" href="./style.css">
 </head>
 
 <body>
-  <div class="container">
-    <div class="slotcontainer">
-      <div class="slot">
-        <div class="symbols" id="slot1Symbols"></div>
-      </div>
+    <div class="container">
+        <div class="slotcontainer">
+            <div class="slot">
+                <div class="symbols" id="slot1Symbols"></div>
+            </div>
 
-      <div class="slot">
-        <div class="symbols" id="slot2Symbols"></div>
-      </div>
+            <div class="slot">
+                <div class="symbols" id="slot2Symbols"></div>
+            </div>
 
-      <div class="slot">
-        <div class="symbols" id="slot3Symbols"></div>
-      </div>
+            <div class="slot">
+                <div class="symbols" id="slot3Symbols"></div>
+            </div>
+        </div>
+
+        <div style="display: flex;">
+            <button onclick="spin()">Spin</button>
+            <button onclick="reset();">Reset</button>
+        </div>
     </div>
 
-    <div style="display: flex;">
-      <button onclick="spin()">Spin</button>
-      <button onclick="reset();">Reset</button>
-    </div>
-  </div>
+    <script src="./script.js"></script>
 </body>
 
-</html>
-<!-- partial -->
-  <script  src="./script.js"></script>
-
-</body>
 </html>
