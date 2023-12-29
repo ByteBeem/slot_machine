@@ -42,21 +42,9 @@ function spin() {
   const slots = document.querySelectorAll('.slot');
   let completedSlots = 0;
 
-  slots.forEach((slot, index) => {
-    const symbols = slot.querySelector('.symbols');
-    const symbolHeight = symbols.querySelector('.symbol')?.clientHeight;
-    const symbolCount = symbols.childElementCount;
-
-    symbols.innerHTML = '';
-    symbols.appendChild(createSymbolElement('❓'));
-
-    for (let i = 0; i < 3; i++) {
-      slotSymbols[index].forEach(symbol => {
-        symbols.appendChild(createSymbolElement(symbol));
-      });
-    }
-
-    socket.on("Symbols", (receivedSymbols) => {
+  // Move socket.on("Symbols", ...) outside the loop
+  socket.on("Symbols", (receivedSymbols) => {
+    slots.forEach((slot, index) => {
       const symbols = slot.querySelector('.symbols');
       const symbolHeight = symbols.querySelector('.symbol')?.clientHeight;
       const symbolCount = symbols.childElementCount;
@@ -85,6 +73,7 @@ function spin() {
 
   spun = true;
 }
+
 
 function reset() {
   const slots = document.querySelectorAll('.slot');
