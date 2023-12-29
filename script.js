@@ -8,8 +8,7 @@ const audio = new Audio('./slot-machine-payout-81725.mp3');
 const socket = io('https://spinz-wheel-server-fad3c875d012.herokuapp.com/');
 let spun = false;
 
-// Assuming balance is defined somewhere in your code
-let balance = 10; // Replace with the actual balance value
+
 
 function createSymbolElement(symbol) {
   const div = document.createElement('div');
