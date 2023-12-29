@@ -28,6 +28,7 @@ function spin() {
    const storedToken = localStorage.getItem('yourTokenKey');
   if(balance < 1){
     alert("Insufficient balance");
+    return;
   }
   balance -= 1;
     const dynamicBalanceElement = document.getElementById('dynamic-balance');
