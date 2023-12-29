@@ -58,3 +58,30 @@ button {
     padding: 20px 40px; 
     font-size: 40px; 
 }
+.bet-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+.bet-amount h3,
+.balance h3 {
+  margin: 0;
+}
+
+.bet-amount {
+  color: #333;
+}
+
+.balance {
+  color: #0066cc; 
+  margin-left: 20px;
+}
+
+#dynamic-balance {
+  font-weight: bold;
+}
