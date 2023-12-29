@@ -25,15 +25,17 @@ function spin() {
   if (spun) {
     reset();
   }
-   const storedToken = localStorage.getItem('yourTokenKey');
-  if(balance < 1){
+
+  const storedToken = localStorage.getItem('yourTokenKey');
+  if (balance < 1) {
     alert("Insufficient balance");
     return;
   }
+
   balance -= 1;
-    const dynamicBalanceElement = document.getElementById('dynamic-balance');
-    dynamicBalanceElement.textContent = balance;
-  
+  const dynamicBalanceElement = document.getElementById('dynamic-balance');
+  dynamicBalanceElement.textContent = balance;
+
   socket.emit("fruitSpin", storedToken);
   playSlotSound(); 
 
@@ -46,7 +48,6 @@ function spin() {
     const symbolCount = symbols.childElementCount;
 
     symbols.innerHTML = '';
-
     symbols.appendChild(createSymbolElement('❓'));
 
     for (let i = 0; i < 3; i++) {
@@ -54,31 +55,33 @@ function spin() {
         symbols.appendChild(createSymbolElement(symbol));
       });
     }
-  socket.on("Symbols", (receivedSymbols) => {
-  const symbols = slot.querySelector('.symbols');
-  const symbolHeight = symbols.querySelector('.symbol')?.clientHeight;
-  const symbolCount = symbols.childElementCount;
 
-  const totalDistance = symbolCount * symbolHeight;
-  const randomOffset = -Math.floor(Math.random() * (symbolCount - 1) + 1) * symbolHeight;
+    socket.on("Symbols", (receivedSymbols) => {
+      const symbols = slot.querySelector('.symbols');
+      const symbolHeight = symbols.querySelector('.symbol')?.clientHeight;
+      const symbolCount = symbols.childElementCount;
 
-  // Use the symbols received from the server instead of the local symbols
-  symbols.innerHTML = '';
-  symbols.appendChild(createSymbolElement('❓'));
-  receivedSymbols.forEach(symbol => {
-    symbols.appendChild(createSymbolElement(symbol));
+      const totalDistance = symbolCount * symbolHeight;
+      const randomOffset = -Math.floor(Math.random() * (symbolCount - 1) + 1) * symbolHeight;
+
+      // Use the symbols received from the server instead of the local symbols
+      symbols.innerHTML = '';
+      symbols.appendChild(createSymbolElement('❓'));
+
+      receivedSymbols.forEach(symbol => {
+        symbols.appendChild(createSymbolElement(symbol));
+      });
+
+      symbols.style.top = `${randomOffset}px`;
+
+      symbols.addEventListener('transitionend', () => {
+        completedSlots++;
+        if (completedSlots === slots.length) {
+          logDisplayedSymbols();
+        }
+      }, { once: true });
+    });
   });
-
-  symbols.style.top = `${randomOffset}px`;
-
-  symbols.addEventListener('transitionend', () => {
-    completedSlots++;
-    if (completedSlots === slots.length) {
-        logDisplayedSymbols();
-    }
-}, { once: true });
-
-});
 
   spun = true;
 }
