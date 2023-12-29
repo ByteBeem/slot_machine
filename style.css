@@ -17,7 +17,7 @@ body {
     justify-content: center;
     align-items: center;
     margin-bottom: 20px;
-    perspective: 1000px; 
+    perspective: 1000px;
 }
 
 .slot {
@@ -44,17 +44,17 @@ body {
 .slot .symbol {
     width: 200px;
     height: 500px;
-    font-size: 60px;
+    font-size: 80px; 
     line-height: 100px;
     display: block;
     text-align: center;
-    padding-top: 25px;
+    padding-top: 50px;
 }
 
 button {
     width: 180px;
     height: 200px;
     margin: 0 10px;
-    padding: 10px 20px;
-    font-size: 16px;
+    padding: 20px 40px; 
+    font-size: 20px; 
 }
